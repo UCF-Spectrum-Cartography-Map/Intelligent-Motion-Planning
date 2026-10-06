@@ -8,8 +8,10 @@
     }
   },
   "remoteUser": "ros",
-  "workspaceFolder": "/home/ros/ros2_ws",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/home/ros/ros2_ws,type=bind",
+  // Mount your folder at ~/host. Mounting it over ~/ros2_ws (the original setting)
+  // hides the ArduPilot/ROS workspace that the image spent an hour building.
+  "workspaceFolder": "/home/ros/host",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/ros/host,type=bind",
   "runArgs": [
     "--platform=linux/amd64",
     "--net=host",
@@ -34,5 +36,5 @@
       ]
     }
   },
-  "postCreateCommand": "echo 'Dev container ready. Run: bash ~/launch_sim.sh'"
+  "postCreateCommand": "cp ~/host/launch_sim.sh ~/launch_sim.sh && echo 'Dev container ready. Run: bash ~/launch_sim.sh'"
 }

@@ -14,8 +14,7 @@ RUN apt-get update && apt-get install -y \
     xvfb x11vnc x11-apps \
     libgl1-mesa-dri libgl1-mesa-glx mesa-utils \
     libegl1 libgles2 libegl-dev \
-    # MAVProxy
-    mavproxy \
+    # (MAVProxy is not an Ubuntu apt package; it is installed with pip below)
  && rm -rf /var/lib/apt/lists/*
 
 # ── Gazebo Harmonic (non-default pairing with ROS 2 Humble) ──
@@ -83,7 +82,15 @@ RUN . /opt/ros/humble/setup.sh \
  && sudo apt-get update -q \
  && rosdep update \
  && rosdep install --from-paths src --ignore-src -y \
- && rm -rf /var/lib/apt/lists/*
+ && sudo rm -rf /var/lib/apt/lists/*
+
+# ArduPilot build prerequisites the base image lacks
+# (rsync for waf configure; Python modules from ArduPilot's install-prereqs list)
+RUN sudo apt-get update -q \
+ && sudo apt-get install -y rsync \
+ && sudo rm -rf /var/lib/apt/lists/* \
+ && sudo pip install pexpect ptyprocess empy==3.3.4 pymavlink pyserial \
+      lxml dronecan future geocoder tabulate pyparsing psutil intelhex
 
 # ── Build ─────────────────────────────────────────────────────
 RUN . /opt/ros/humble/setup.sh \
@@ -91,7 +98,8 @@ RUN . /opt/ros/humble/setup.sh \
  && export GZ_VERSION=harmonic \
  && colcon build \
       --packages-up-to ardupilot_gz_bringup \
-      --executor sequential
+      --executor sequential \
+    || (cat log/latest_build/ardupilot_sitl/stdout_stderr.log; exit 1)
 
 # Create the missing param file in the install space
 RUN echo "DDS_ENABLE 1" > \
