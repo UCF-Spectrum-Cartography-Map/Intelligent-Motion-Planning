@@ -1,0 +1,8 @@
+# Ignore ArduPilot simulator files
+eeprom.bin
+mav_0_1.parm
+mav.parm
+mav.tlog
+mav.tlog.raw
+logs/
+terrain/
