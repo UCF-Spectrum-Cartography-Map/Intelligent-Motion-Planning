@@ -73,12 +73,17 @@ Do this every time you restart your Mac or Docker Desktop.
 - Start no client
 - Disable access control
 
+Open Windows Security $\rarr$ "Allow an app through firewall"  
+* Find VcXsrv windows xserver
+* Enable Private and Public
+
 ### Step 4 — Launch the simulation
 
 Open a terminal inside the VS Code Dev Container (`Terminal → New Terminal`) and run:
 
 ```bash
-bash ~/launch_sim.sh
+bash  
+~/launch_sim.sh
 ```
 
 Wait for this line before proceeding:
@@ -125,7 +130,7 @@ gz topic -e -t /world/playpen/model/wildthumper/link/base_link/sensor/navsat_sen
 In the second terminal, start the VNC server and RViz:
 
 ```bash
-x11vnc -display :99 -nopw -forever -bg -quiet
+export DISPLAY=host.docker.internal:0
 rviz2 -d ~/ros2_ws/install/ardupilot_gz_bringup/share/ardupilot_gz_bringup/rviz/wildthumper.rviz &
 ```
 
